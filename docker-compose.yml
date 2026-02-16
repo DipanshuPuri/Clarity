@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: clarity-db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: claritydb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  # Uncomment this to run the backend in docker too
+  # server:
+  #   build: ./server
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     DATABASE_URL: postgresql://admin:password123@postgres:5432/claritydb?schema=public
+  #     JWT_SECRET: dev-secret
+  #     PORT: 3000
+  #   depends_on:
+  #     - postgres
+
+volumes:
+  postgres_data:
