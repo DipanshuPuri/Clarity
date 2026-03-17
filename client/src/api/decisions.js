@@ -11,7 +11,11 @@ export const decisionsApi = {
      * Fetch all decisions for an intent
      */
     getDecisions: async (intentId) => {
-        const response = await fetch(`${API_BASE_URL}/api/decisions?intentId=${intentId}`, {
+        const url = intentId && intentId !== 'undefined'
+            ? `${API_BASE_URL}/api/decisions?intentId=${intentId}`
+            : `${API_BASE_URL}/api/decisions`;
+
+        const response = await fetch(url, {
             credentials: 'include'
         });
         if (!response.ok) throw new Error('Failed to synchronize decisions');

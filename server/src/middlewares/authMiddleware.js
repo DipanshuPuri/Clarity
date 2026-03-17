@@ -53,21 +53,31 @@ const authenticate = (req, res, next) => {
 // =======================
 // AUTHORIZE MIDDLEWARE
 // =======================
-// Enforces role-based access
+// Enforces role-based access with hierarchy:
+// FOUNDER > ADMIN > MANAGER > MEMBER > INTERN
+const roleHierarchy = {
+    'INTERN': 1,
+    'MEMBER': 2,
+    'MANAGER': 3,
+    'ADMIN': 4,
+    'FOUNDER': 5
+};
+
 const authorize = (requiredRole) => {
     return (req, res, next) => {
         if (!req.user) {
             return res.status(401).json({ error: 'Unauthorized' });
         }
 
-        // If route requires MANAGER, user must be MANAGER
-        if (requiredRole === 'MANAGER' && req.user.role !== 'MANAGER') {
+        const userRoleLevel = roleHierarchy[req.user.role] || 0;
+        const requiredRoleLevel = roleHierarchy[requiredRole] || 0;
+
+        if (userRoleLevel < requiredRoleLevel) {
             return res.status(403).json({
-                error: 'Forbidden: Manager role required'
+                error: `Forbidden: ${requiredRole} role or higher required`
             });
         }
 
-        // MEMBER routes are accessible to both MEMBER and MANAGER
         next();
     };
 };

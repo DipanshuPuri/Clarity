@@ -10,7 +10,11 @@ export const intentsApi = {
      * Fetch all intents for a project
      */
     getIntents: async (projectId) => {
-        const response = await fetch(`${API_BASE_URL}/api/intents?projectId=${projectId}`, {
+        const url = projectId && projectId !== 'undefined'
+            ? `${API_BASE_URL}/api/intents?projectId=${projectId}`
+            : `${API_BASE_URL}/api/intents`;
+
+        const response = await fetch(url, {
             credentials: 'include'
         });
         if (!response.ok) throw new Error('Failed to synchronize intents');

@@ -12,7 +12,11 @@ export const tasksApi = {
      * filters: { decisionId, intentId, assigneeId }
      */
     getTasks: async (filters = {}) => {
-        const queryParams = new URLSearchParams(filters).toString();
+        // Remove 'undefined' strings or null/undefined values
+        const cleanFilters = Object.fromEntries(
+            Object.entries(filters).filter(([_, v]) => v !== undefined && v !== null && v !== 'undefined')
+        );
+        const queryParams = new URLSearchParams(cleanFilters).toString();
         const response = await fetch(`${API_BASE_URL}/api/tasks?${queryParams}`, {
             credentials: 'include'
         });

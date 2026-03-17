@@ -1,74 +1,87 @@
 import React from 'react';
 import Navbar from '../components/ui/Navbar';
-import { ShieldAlert, EyeOff, Fingerprint, ArrowLeft } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import Button from '../components/ui/Button';
+import { Link, useNavigate } from 'react-router-dom';
+import { ArrowLeft, Fingerprint, ShieldCheck, EyeOff, Database, Globe } from 'lucide-react';
 
-/**
- * Privacy - Privacy Shield Protocol Station
- */
 const Privacy = () => {
     const navigate = useNavigate();
+
+    const sections = [
+        {
+            icon: Fingerprint,
+            title: 'Information We Collect',
+            content: 'When you create an account, we collect your name, email address, and role. When you use Clarity, we log workspace activity — projects created, tickets updated, workflows modified, and releases deployed — to maintain an accurate audit trail.'
+        },
+        {
+            icon: ShieldCheck,
+            title: 'How We Protect Your Data',
+            content: 'All data is transmitted over encrypted connections. Sessions are authenticated using secure tokens with role-based access control (RBAC). We follow industry-standard practices for credential storage and never store passwords in plain text.'
+        },
+        {
+            icon: Database,
+            title: 'Data Ownership',
+            content: 'Your workspace data belongs to you. We do not sell, rent, or share your project data, workflows, or release history with third parties. Organization data is accessible only to members of that organization based on their assigned roles.'
+        },
+        {
+            icon: EyeOff,
+            title: 'Minimal Data Collection',
+            content: 'We follow the principle of least privilege. Only metadata necessary for platform functionality — such as timestamps, user IDs, and action types — is processed for analytics. Internal project details and ticket content remain private to your organization.'
+        },
+        {
+            icon: Globe,
+            title: 'Cookies & Analytics',
+            content: 'Clarity uses essential cookies for session management and authentication. We do not use third-party advertising trackers. Anonymous usage analytics may be collected to improve platform performance and user experience.'
+        }
+    ];
 
     return (
         <div className="min-h-screen bg-white animate-fade-slide-up">
             <Navbar />
 
-            <main className="pt-32 pb-20 px-8 md:px-24 max-w-4xl mx-auto space-y-20">
-                <div className="space-y-6">
-                    <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="gap-2 -ml-3 text-slate-400 hover:text-secondary group transition-all">
-                        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                        <span className="text-[10px] font-bold uppercase tracking-widest">Back</span>
-                    </Button>
-                    <div className="space-y-2">
-                        <span className="text-[10px] font-bold text-secondary uppercase tracking-[0.4em]">Security Station</span>
-                        <h1 className="text-6xl font-black text-slate-900 tracking-tighter leading-none">
-                            PRIVACY <span className="text-secondary">SHIELD</span>
-                        </h1>
-                        <p className="text-sm text-slate-400 font-medium uppercase tracking-widest">Effective Date: February 11, 2026</p>
-                    </div>
-                </div>
+            <main className="pt-28 pb-20 px-8 md:px-20 max-w-4xl mx-auto">
+                {/* Back */}
+                <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-900 transition-colors mb-10 group">
+                    <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+                    Back
+                </button>
 
-                <div className="p-12 bg-[#fcfdfe] border border-slate-100 rounded-[48px] space-y-12 shadow-sm text-slate-600 font-medium leading-relaxed">
-                    <section className="space-y-4">
-                        <div className="flex items-center gap-3">
-                            <Fingerprint className="w-5 h-5 text-secondary" />
-                            <h2 className="text-sm font-black text-slate-900 uppercase tracking-[0.2em]">01. Identity Protection</h2>
-                        </div>
-                        <p className="pl-8 text-sm">
-                            At Clarity Bureau, your identity is treated as a strategic asset. We utilize encrypted session protocols to ensure that your workflow activity remains isolated and protected from third-party interception.
-                        </p>
-                    </section>
-
-                    <section className="space-y-4">
-                        <div className="flex items-center gap-3">
-                            <ShieldAlert className="w-5 h-5 text-secondary" />
-                            <h2 className="text-sm font-black text-slate-900 uppercase tracking-[0.2em]">02. Data Sovereignty</h2>
-                        </div>
-                        <p className="pl-8 text-sm">
-                            Your Intelligence Station data belongs solely to you. We do not aggregate or sell your strategic intents, decision records, or execution units. All data is stored in secured, high-availability clusters.
-                        </p>
-                    </section>
-
-                    <section className="space-y-4">
-                        <div className="flex items-center gap-3">
-                            <EyeOff className="w-5 h-5 text-secondary" />
-                            <h2 className="text-sm font-black text-slate-900 uppercase tracking-[0.2em]">03. Minimal Exposure</h2>
-                        </div>
-                        <p className="pl-8 text-sm">
-                            We follow the principle of least privilege. Only essential metadata required for synchronization and synchronization is processed. Your reasoning and internal reflections are strictly private.
-                        </p>
-                    </section>
-
-                    <p className="text-[10px] text-slate-400 pt-10 border-t border-slate-100 italic">
-                        The Clarity Bureau maintains the highest tier of confidentiality protocols to secure your strategic journey.
+                {/* Header */}
+                <div className="space-y-3 mb-14">
+                    <span className="text-[10px] font-medium text-secondary uppercase tracking-[0.4em]">Security</span>
+                    <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight">
+                        Privacy Policy
+                    </h1>
+                    <p className="text-sm text-slate-500 font-normal">
+                        Last updated: February 11, 2026
                     </p>
                 </div>
+
+                {/* Sections */}
+                <div className="space-y-8">
+                    {sections.map((section, i) => (
+                        <div key={i} className="p-6 bg-slate-50 border border-slate-100 rounded-2xl space-y-3 hover:border-slate-200 transition-colors">
+                            <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center">
+                                    <section.icon className="w-4 h-4 text-secondary" />
+                                </div>
+                                <h2 className="text-sm font-bold text-slate-900">{`${String(i + 1).padStart(2, '0')}. ${section.title}`}</h2>
+                            </div>
+                            <p className="text-sm text-slate-600 font-normal leading-relaxed pl-11">
+                                {section.content}
+                            </p>
+                        </div>
+                    ))}
+                </div>
+
+                {/* Disclaimer */}
+                <p className="text-xs text-slate-400 font-normal mt-10 pt-6 border-t border-slate-100">
+                    Clarity - Context First Workflow Architecture is committed to protecting your privacy. If you have questions about our data practices, please reach out to our team.
+                </p>
             </main>
 
-            <footer className="py-12 border-t border-slate-50 text-center">
-                <p className="text-[9px] font-bold text-slate-300 uppercase tracking-[0.4em]">
-                    &copy; {new Date().getFullYear()} CLARITY BUREAU.
+            <footer className="py-8 border-t border-slate-100 text-center">
+                <p className="text-[10px] text-slate-400 font-normal">
+                    &copy; {new Date().getFullYear()} Clarity - Context First Workflow Architecture
                 </p>
             </footer>
         </div>

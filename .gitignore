@@ -1,0 +1,50 @@
+# Dependencies
+node_modules/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Build output
+dist/
+build/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Prisma
+server/prisma/*.db
+server/prisma/*.db-journal
+
+# Misc
+*.tgz
+.cache/
+
+# Personal/generated files
+linkedin_post.md
+linkedin_post_luminary_format.md
+.gemini/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Scripts (one-off utilities)
+generate_mock.js
+generate_mock.py
+client/patch_releases.js
+client/patch_releases.py
+server/debugEndpoint.js
+server/debugReleases.js
+server/hotfixUsers.js
+server/wipeAndSeed.js

@@ -8,32 +8,12 @@ datasource db {
 }
 
 enum Role {
+  INTERN
   MEMBER
   MANAGER
-}
-
-enum IntentStatus {
-  ACTIVE
-  COMPLETED
-  ARCHIVED
-}
-
-enum DecisionStatus {
-  PROPOSED
-  APPROVED
-  REJECTED
-}
-
-enum TaskStatus {
-  TODO
-  IN_PROGRESS
-  DONE
-}
-
-enum OutcomeResult {
-  SUCCESS
-  PARTIAL
-  FAILED
+  ADMIN
+  INVESTOR
+  FOUNDER
 }
 
 model User {
@@ -41,12 +21,43 @@ model User {
   email        String     @unique
   passwordHash String
   role         Role       @default(MEMBER)
+  position     String?
+  department   String?
   firstName    String?
   lastName     String?
-  organization String?
+  profilePicture String?
 
-  decisions    Decision[] @relation("UserDecisions")
-  tasks        Task[]     @relation("UserTasks")
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  
+  assignedTickets Ticket[] @relation("UserTickets")
+  createdTickets  Ticket[] @relation("CreatedTickets")
+  projects        Project[] @relation("ProjectMembers")
+  
+  // --- RELEASES ---
+  ownedReleases   Release[] @relation("ReleaseOwner")
+  engReleases     Release[] @relation("ReleaseEngOwner")
+  qaReleases      Release[] @relation("ReleaseQaOwner")
+  deployReleases  Release[] @relation("ReleaseDeployOwner")
+  deployments     DeploymentLog[] @relation("DeployedBy")
+  audits          ReleaseScopeAudit[] @relation("AuditUser")
+}
+
+model Organization {
+  id          String   @id @default(uuid())
+  name        String
+  industry    String?
+  size        String?
+  description String?
+  website     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  members     User[]
+  projects    Project[]
+
+  // --- RELEASES ---
+  releases    Release[]
 }
 
 model Project {
@@ -54,68 +65,217 @@ model Project {
   name              String
   problemStatement  String
   successDefinition String
+  budget            Float?
+  deadline          DateTime?
+  status            String?  @default("Ongoing")
+  priority          String?  @default("Medium")
+  team              String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
-  intents     Intent[]
+  organizationId    String?
+  organization      Organization? @relation(fields: [organizationId], references: [id])
+
+  tickets     Ticket[]
+  workflows   Workflow[]
+  members     User[] @relation("ProjectMembers")
+
+  // --- RELEASES ---
+  releases    Release[]
 }
 
-model Intent {
-  id            String       @id @default(uuid())
-  title         String
-  assumption    String
-  successSignal String
-  status        IntentStatus @default(ACTIVE)
+model Ticket {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  status      String   @default("To Do")
+  priority    String   @default("Medium")
+  type        String?  @default("Task")
+  
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  assigneeId  String?
+  assignee    User?    @relation("UserTickets", fields: [assigneeId], references: [id])
+  
+  createdById String?
+  createdBy   User?    @relation("CreatedTickets", fields: [createdById], references: [id])
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  projectId     String
-  project       Project      @relation(fields: [projectId], references: [id])
-
-  decisions     Decision[]
-  tasks         Task[]
+  // --- RELEASES ---
+  releases    Release[]
+  handoffs    Handoff[]
 }
 
-model Decision {
-  id                   String         @id @default(uuid())
-  title                String
-  chosenOption         String
-  rationale            String
-  rejectedAlternatives String
-  status               DecisionStatus @default(PROPOSED)
-  createdAt            DateTime       @default(now())
 
-  intentId             String
-  intent               Intent         @relation(fields: [intentId], references: [id])
-
-  authorId             String
-  author               User           @relation("UserDecisions", fields: [authorId], references: [id])
-
-  tasks                Task[]
+model Workflow {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  isDefault   Boolean  @default(false)
+  
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  nodes       WorkflowNode[]
+  edges       WorkflowEdge[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
-model Task {
-  id                   String     @id @default(uuid())
-  title                String
-  status               TaskStatus @default(TODO)
-  executionDescription String
-  expectedOutcome      String
-
-  intentId             String
-  intent               Intent     @relation(fields: [intentId], references: [id])
-
-  decisionId           String
-  decision             Decision   @relation(fields: [decisionId], references: [id])
-
-  assigneeId           String?
-  assignee             User?      @relation("UserTasks", fields: [assigneeId], references: [id])
-
-  outcome              Outcome?
+enum WorkflowNodeType {
+  START
+  ACTIVE
+  Here
+  END
+  PAUSED
 }
 
-model Outcome {
-  id        String        @id @default(uuid())
-  result    OutcomeResult
-  notes     String
-  learning  String
-  createdAt DateTime      @default(now())
+model WorkflowNode {
+  id             String           @id @default(uuid())
+  name           String
+  type           WorkflowNodeType @default(ACTIVE)
+  color          String?          @default("#64748b") // slate-500
+  positionX      Float            @default(0)
+  positionY      Float            @default(0)
+  description    String?
+  owners         Json?
+  history        Json?
+  executionNotes Json?
+  discussions    Json?
+  
+  workflowId     String
+  workflow    Workflow         @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  
+  fromEdges   WorkflowEdge[]   @relation("FromNode")
+  toEdges     WorkflowEdge[]   @relation("ToNode")
+}
 
-  taskId    String        @unique
-  task      Task          @relation(fields: [taskId], references: [id])
+model WorkflowEdge {
+  id          String   @id @default(uuid())
+  name        String?
+  
+  workflowId  String
+  workflow    Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  
+  fromNodeId  String
+  fromNode    WorkflowNode @relation("FromNode", fields: [fromNodeId], references: [id], onDelete: Cascade)
+  
+  toNodeId    String
+  toNode      WorkflowNode @relation("ToNode", fields: [toNodeId], references: [id], onDelete: Cascade)
+  
+  // Future extensibility for transition rules
+  rules       Json?    
+}
+
+// =====================================
+// MODULE: RELEASES
+// =====================================
+
+enum ReleaseStatus {
+    PLANNING
+    ACTIVE
+    FROZEN
+    READY
+    DEPLOYED
+    STABILIZATION
+    DEGRADED
+    ARCHIVED
+}
+
+model Release {
+    id               String        @id @default(uuid())
+    name             String
+    description      String?
+    status           ReleaseStatus @default(PLANNING)
+    readinessScore   Float         @default(0)
+    workflowSnapshot Json?
+    contextSnapshot  Json?
+    
+    targetDate       DateTime?
+    freezeDate       DateTime?
+    stabilizationEnd DateTime?
+    createdAt        DateTime      @default(now())
+    updatedAt        DateTime      @updatedAt
+
+    organizationId   String
+    organization     Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+    releaseOwnerId   String?
+    releaseOwner     User?         @relation("ReleaseOwner", fields: [releaseOwnerId], references: [id], onDelete: SetNull)
+
+    engOwnerId       String?
+    engOwner         User?         @relation("ReleaseEngOwner", fields: [engOwnerId], references: [id], onDelete: SetNull)
+
+    qaOwnerId        String?
+    qaOwner          User?         @relation("ReleaseQaOwner", fields: [qaOwnerId], references: [id], onDelete: SetNull)
+
+    deployOwnerId    String?
+    deployOwner      User?         @relation("ReleaseDeployOwner", fields: [deployOwnerId], references: [id], onDelete: SetNull)
+
+    projects         Project[]
+    tickets          Ticket[]
+    deployments      DeploymentLog[]
+    checklists       ReleaseChecklist[]
+    audits           ReleaseScopeAudit[]
+
+    dependsOn        Release[] @relation("ReleaseDependencies")
+    dependedUponBy   Release[] @relation("ReleaseDependencies")
+
+    @@index([organizationId])
+    @@index([status])
+}
+
+model DeploymentLog {
+    id             String   @id @default(uuid())
+    releaseId      String
+    release        Release  @relation(fields: [releaseId], references: [id], onDelete: Cascade)
+    
+    environment    String
+    deployedById   String
+    deployedBy     User     @relation("DeployedBy", fields: [deployedById], references: [id])
+    
+    logBody        String?
+    ticketsShipped Json?
+    rollbackFlag   Boolean  @default(false)
+    
+    createdAt      DateTime @default(now())
+    deployedAt     DateTime @default(now())
+
+    @@index([releaseId])
+}
+
+model Handoff {
+    id              String   @id @default(uuid())
+    ticketId        String
+    ticket          Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+    fromRole        String
+    toRole          String
+    acceptedAt      DateTime?
+    pendingDuration Int?
+    createdAt       DateTime @default(now())
+}
+
+model ReleaseChecklist {
+    id                 String   @id @default(uuid())
+    title              String
+    autoValidationRule Json?
+    completionState    Boolean  @default(false)
+    
+    releaseId          String
+    release            Release  @relation(fields: [releaseId], references: [id], onDelete: Cascade)
+}
+
+model ReleaseScopeAudit {
+    id        String   @id @default(uuid())
+    releaseId String
+    release   Release  @relation(fields: [releaseId], references: [id], onDelete: Cascade)
+    eventType String
+    userId    String
+    user      User     @relation("AuditUser", fields: [userId], references: [id])
+    reason    String?
+    timestamp DateTime @default(now())
 }

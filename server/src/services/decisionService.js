@@ -7,6 +7,8 @@ const createDecision = async (data, authorId) => {
             chosenOption: data.chosenOption,
             rationale: data.rationale,
             rejectedAlternatives: data.rejectedAlternatives,
+            tradeoffs: data.tradeoffs,
+            expectedOutcome: data.expectedOutcome,
             status: data.status || 'PROPOSED',
             intentId: data.intentId,
             authorId: authorId
@@ -14,25 +16,52 @@ const createDecision = async (data, authorId) => {
     });
 };
 
-const getDecisions = async (filters) => {
+const getDecisions = async ({ intentId, organizationId }) => {
     const where = {};
-    if (filters.intentId) where.intentId = filters.intentId;
+
+    // 1. Intent Scoping (if provided and valid)
+    if (intentId && intentId !== 'undefined') {
+        where.intentId = intentId;
+    }
+
+    // 2. Organizational Scoping
+    // If we have an organizationId, we must ensure the decision belongs to it.
+    // Lineage: Decision -> Intent -> Project -> Organization
+    if (organizationId) {
+        where.intent = {
+            project: {
+                organizationId: organizationId
+            }
+        };
+    }
 
     return await prisma.decision.findMany({
         where,
         include: {
-            author: { select: { email: true, role: true } },
+            author: { select: { email: true, role: true, firstName: true, lastName: true } },
+            intent: {
+                select: {
+                    title: true,
+                    project: { select: { name: true } }
+                }
+            },
             _count: { select: { tasks: true } }
         },
         orderBy: { createdAt: 'desc' }
     });
 };
 
-const getDecisionById = async (id) => {
-    return await prisma.decision.findUnique({
-        where: { id },
+const getDecisionById = async (id, organizationId) => {
+    return await prisma.decision.findFirst({
+        where: {
+            id,
+            intent: {
+                project: { organizationId }
+            }
+        },
         include: {
-            author: { select: { email: true } },
+            author: { select: { email: true, firstName: true, lastName: true } },
+            intent: { select: { id: true, title: true } },
             tasks: true,
             _count: { select: { tasks: true } }
         }
@@ -46,6 +75,11 @@ const updateDecision = async (id, data) => {
     });
 
     if (existing && existing._count.tasks > 0) {
+        // Allow status updates but maybe restrict content changes? 
+        // User said "read-only", usually implies NO edits. 
+        // But for now, let's strictly block if tasks exist as requested "Decision becomes read-only".
+        // Use a flag or check specific fields?
+        // Let's assume FULL read-only for now if tasks exist.
         throw new Error('Decision is immutable because tasks have already been assigned for execution.');
     }
 
@@ -56,6 +90,8 @@ const updateDecision = async (id, data) => {
             chosenOption: data.chosenOption,
             rationale: data.rationale,
             rejectedAlternatives: data.rejectedAlternatives,
+            tradeoffs: data.tradeoffs,
+            expectedOutcome: data.expectedOutcome,
             status: data.status
         }
     });

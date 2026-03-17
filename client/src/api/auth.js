@@ -5,7 +5,7 @@
  * Enforces 'credentials: include' to ensure HttpOnly cookies are sent/received.
  */
 
-const API_BASE_URL = 'http://localhost:3000';
+export const API_BASE_URL = 'http://localhost:3000';
 
 /**
  * Helper to handle fetch errors consistently

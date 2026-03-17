@@ -5,29 +5,52 @@ const createProject = async (data) => {
         data: {
             name: data.name,
             problemStatement: data.problemStatement,
-            successDefinition: data.successDefinition
+            successDefinition: data.successDefinition,
+            budget: data.budget ? parseFloat(data.budget) : null,
+            deadline: data.deadline ? new Date(data.deadline) : null,
+            status: data.status || "Ongoing",
+            priority: data.priority || "Medium",
+            team: data.team,
+            organizationId: data.organizationId
+        },
+        include: {
+            tickets: true
         }
     });
 };
 
-const getAllProjects = async () => {
+const getAllProjects = async (organizationId) => {
     return await prisma.project.findMany({
+        where: { organizationId },
         include: {
-            _count: {
-                select: { intents: true }
-            }
-        }
+            tickets: {
+                include: {
+                    assignee: true,
+                    handoffs: { orderBy: { createdAt: 'desc' } },
+                    releases: { select: { id: true, name: true, status: true } }
+                }
+            },
+            members: true
+        },
+        orderBy: { updatedAt: 'desc' }
     });
 };
 
-const getProjectById = async (id) => {
-    return await prisma.project.findUnique({
-        where: { id },
+const getProjectById = async (id, organizationId) => {
+    return await prisma.project.findFirst({
+        where: {
+            id,
+            organizationId
+        },
         include: {
-            intents: {
-                take: 5,
-                orderBy: { title: 'asc' }
-            }
+            tickets: {
+                include: {
+                    assignee: true,
+                    handoffs: { orderBy: { createdAt: 'desc' } },
+                    releases: { select: { id: true, name: true, status: true } }
+                }
+            },
+            members: true
         }
     });
 };
@@ -38,25 +61,37 @@ const updateProject = async (id, data) => {
         data: {
             name: data.name,
             problemStatement: data.problemStatement,
-            successDefinition: data.successDefinition
+            successDefinition: data.successDefinition,
+            budget: data.budget ? parseFloat(data.budget) : undefined,
+            deadline: data.deadline ? new Date(data.deadline) : undefined,
+            status: data.status,
+            priority: data.priority,
+            team: data.team
         }
     });
 };
 
 const deleteProject = async (id) => {
-    // Check for intents first (Manual guard if we want custom error message instead of Prisma error)
     const project = await prisma.project.findUnique({
-        where: { id },
-        include: { _count: { select: { intents: true } } }
+        where: { id }
     });
 
     if (!project) throw new Error('Project not found');
-    if (project._count.intents > 0) {
-        throw new Error('Cannot delete project with existing Intents. Archive it instead.');
-    }
 
     return await prisma.project.delete({
         where: { id }
+    });
+};
+
+const addMember = async (projectId, userId) => {
+    return await prisma.project.update({
+        where: { id: projectId },
+        data: {
+            members: {
+                connect: { id: userId }
+            }
+        },
+        include: { members: true }
     });
 };
 
@@ -65,5 +100,6 @@ module.exports = {
     getAllProjects,
     getProjectById,
     updateProject,
-    deleteProject
+    deleteProject,
+    addMember
 };

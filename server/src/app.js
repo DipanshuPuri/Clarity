@@ -58,20 +58,15 @@ app.get('/health', (req, res) => {
 // -----------------------
 const authRoutes = require('./routes/authRoutes');
 const projectRoutes = require('./routes/projectRoutes');
+const ticketRoutes = require('./routes/ticketRoutes');
+const releaseRoutes = require('./routes/releaseRoutes');
+const workflowRoutes = require('./routes/workflowRoutes');
+
 app.use('/auth', authRoutes);
-
-/**
- * NOTE:
- * The following routes are intentionally NOT mounted yet.
- * We will enable them one-by-one AFTER implementing them.
- *
- * This prevents "Cannot find module" crashes.
- */
-
 app.use('/api/projects', projectRoutes);
-// app.use('/api/decisions', decisionRoutes);
-// app.use('/api/tasks', taskRoutes);
-// app.use('/api/outcomes', outcomeRoutes);
+app.use('/api/tickets', ticketRoutes);
+app.use('/api/releases', releaseRoutes);
+app.use('/api/workflows', workflowRoutes);
 
 // =======================
 // Global Error Handler

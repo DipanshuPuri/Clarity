@@ -17,17 +17,28 @@ const createTask = async (data) => {
     });
 };
 
-const getTasks = async (filters) => {
+const getTasks = async ({ intentId, decisionId, assigneeId, organizationId }) => {
     const where = {};
-    if (filters.intentId) where.intentId = filters.intentId;
-    if (filters.decisionId) where.decisionId = filters.decisionId;
-    if (filters.assigneeId) where.assigneeId = filters.assigneeId;
+    if (intentId && intentId !== 'undefined') where.intentId = intentId;
+    if (decisionId && decisionId !== 'undefined') where.decisionId = decisionId;
+    if (assigneeId && assigneeId !== 'undefined') where.assigneeId = assigneeId;
+
+    // 2. Organizational Scoping
+    // Lineage: Task -> Intent -> Project -> Organization
+    if (organizationId) {
+        where.intent = {
+            project: {
+                organizationId: organizationId
+            }
+        };
+    }
 
     return await prisma.task.findMany({
         where,
         include: {
-            decision: true,
-            assignee: { select: { email: true } },
+            decision: { select: { title: true } },
+            intent: { select: { title: true, project: { select: { name: true } } } },
+            assignee: { select: { email: true, firstName: true, lastName: true } },
             outcome: true
         }
     });

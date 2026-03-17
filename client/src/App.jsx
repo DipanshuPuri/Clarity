@@ -1,75 +1,79 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import MainLayout from './layouts/MainLayout';
-import Login from './pages/Login';
-import Dashboard from './pages/Dashboard';
-import Projects from './pages/Projects';
-import ProjectView from './pages/ProjectView';
-import IntentView from './pages/IntentView';
-import DecisionView from './pages/DecisionView';
-import TaskDetail from './pages/TaskDetail';
-import Tasks from './pages/Tasks';
-import Reports from './pages/Reports';
+import { ROUTES } from './routes/config';
+
+// Simple Page Imports (Mocked or Real)
 import Home from './pages/Home';
+import Login from './pages/Login';
+import Register from './pages/Register';
 import FAQ from './pages/FAQ';
 import Terms from './pages/Terms';
 import Privacy from './pages/Privacy';
-import Register from './pages/Register';
+import Dashboard from './pages/Dashboard';
+import Projects from './pages/ProjectsPage';
+import ProjectView from './pages/ProjectDetailPage';
+import WorkflowPage from './pages/WorkflowPage';
+import Analytics from './pages/Analytics';
+import OrganizationDashboard from './pages/OrganizationDashboard';
+import Releases from './pages/Releases';
+import ProfilePage from './pages/ProfilePage';
+
 import { AuthProvider } from './context/AuthContext';
+import { WorkflowProvider } from './context/WorkflowContext';
 import RequireAuth from './components/RequireAuth';
+import ScrollToTop from './components/ScrollToTop';
 
 /**
- * App.jsx - Root Application Component
- * 
- * Route Structure:
- * - /: Public Landing Page
- * - /login: Public Login
- * - /dashboard, /projects, etc: Protected with RequireAuth + MainLayout
+ * App.jsx - Refactored Routing Architecture
  */
 function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
+        <ScrollToTop />
         <Routes>
-          {/* Public Routes */}
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/faq" element={<FAQ />} />
-          <Route path="/terms" element={<Terms />} />
-          <Route path="/privacy" element={<Privacy />} />
-          <Route path="/register" element={<Register />} />
+          {/* 1. Public Routes */}
+          <Route path={ROUTES.HOME} element={<Home />} />
+          <Route path={ROUTES.LOGIN} element={<Login />} />
+          <Route path={ROUTES.REGISTER} element={<Register />} />
+          <Route path={ROUTES.FAQ} element={<FAQ />} />
+          <Route path={ROUTES.TERMS} element={<Terms />} />
+          <Route path={ROUTES.PRIVACY} element={<Privacy />} />
 
-          {/* Authenticated Routes - Protected and Wrapped in MainLayout */}
+          {/* 2. Authenticated Routes Tree (/app) */}
           <Route
-            path="/app"
+            path={ROUTES.APP_ROOT}
             element={
               <RequireAuth>
                 <MainLayout />
               </RequireAuth>
             }
           >
-            {/* Automatic redirection to dashboard from app root */}
-            <Route index element={<Navigate to="/app/dashboard" replace />} />
+            {/* Dashboard Redirect as Default */}
+            <Route index element={<Navigate to={ROUTES.DASHBOARD} replace />} />
 
-            {/* Individual Pages render via <Outlet /> in MainLayout */}
+            {/* Application Pages */}
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="projects" element={<Projects />} />
-            <Route path="projects/:id" element={<ProjectView />} />
-            <Route path="intents/:id" element={<IntentView />} />
-            <Route path="decisions/:id" element={<DecisionView />} />
-            <Route path="tasks" element={<Tasks />} />
-            <Route path="tasks/:id" element={<TaskDetail />} />
-            <Route path="reports" element={<Reports />} />
+            <Route path="projects/:projectId" element={<ProjectView />} />
+            <Route path="workflow" element={
+              <WorkflowProvider>
+                <WorkflowPage />
+              </WorkflowProvider>
+            } />
+            <Route path="analytics" element={<Analytics />} />
+            <Route path="organization" element={<OrganizationDashboard />} />
+            <Route path="profile" element={<ProfilePage />} />
+            <Route path="releases" element={<Releases />} />
           </Route>
 
-          {/* Backward compatibility / Redirection for old links */}
-          <Route path="/dashboard" element={<Navigate to="/app/dashboard" replace />} />
-          <Route path="/projects" element={<Navigate to="/app/projects" replace />} />
-          <Route path="/tasks" element={<Navigate to="/app/tasks" replace />} />
-          <Route path="/reports" element={<Navigate to="/app/reports" replace />} />
+          {/* 3. Global Redirection & Catch-all */}
+          {/* Redirect old top-level routes to /app */}
+          <Route path="/dashboard" element={<Navigate to={ROUTES.DASHBOARD} replace />} />
+          <Route path="/projects" element={<Navigate to={ROUTES.PROJECTS} replace />} />
 
-          {/* Catch-all redirect to landing or dashboard depending on context */}
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<Navigate to={ROUTES.HOME} replace />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

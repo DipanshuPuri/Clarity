@@ -2,14 +2,23 @@ const decisionService = require('../services/decisionService');
 
 const create = async (req, res) => {
     try {
-        const { title, chosenOption, rationale, rejectedAlternatives, intentId, status } = req.body;
+        const { title, chosenOption, rationale, rejectedAlternatives, tradeoffs, expectedOutcome, intentId, status } = req.body;
         if (!title || !chosenOption || !rationale || !rejectedAlternatives || !intentId) {
             return res.status(400).json({ error: 'Title, Chosen Option, Rationale, Rejected Alternatives, and IntentId are required' });
         }
 
         // authorId comes from authMiddleware
         const decision = await decisionService.createDecision(
-            { title, chosenOption, rationale, rejectedAlternatives, intentId, status },
+            {
+                title,
+                chosenOption,
+                rationale,
+                rejectedAlternatives,
+                tradeoffs,
+                expectedOutcome,
+                intentId,
+                status
+            },
             req.user.id // assuming token has id
         );
         res.status(201).json(decision);
@@ -21,7 +30,10 @@ const create = async (req, res) => {
 const list = async (req, res) => {
     try {
         const { intentId } = req.query;
-        const decisions = await decisionService.getDecisions({ intentId });
+        const decisions = await decisionService.getDecisions({
+            intentId,
+            organizationId: req.user?.organizationId
+        });
         res.json(decisions);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -30,8 +42,8 @@ const list = async (req, res) => {
 
 const get = async (req, res) => {
     try {
-        const decision = await decisionService.getDecisionById(req.params.id);
-        if (!decision) return res.status(404).json({ error: 'Decision not found' });
+        const decision = await decisionService.getDecisionById(req.params.id, req.user?.organizationId);
+        if (!decision) return res.status(404).json({ error: 'Decision not found or access denied' });
         res.json(decision);
     } catch (err) {
         res.status(500).json({ error: err.message });

@@ -19,7 +19,8 @@ const handleResponse = async (response) => {
         } catch (e) {
             errorMessage = response.statusText;
         }
-        throw new Error(errorMessage);
+        // Throw object with status to allow specific handling (e.g. 403 Forbidden)
+        throw { message: errorMessage, status: response.status };
     }
 
     if (response.status === 204) {
@@ -73,12 +74,10 @@ export const projectsApi = {
 
     /**
      * Create a new project
-     * @param {string} name 
-     * @param {string} problemStatement 
-     * @param {string} successDefinition 
+     * @param {Object} projectData
      * @returns {Promise<Object>} Created project
      */
-    createProject: async (name, problemStatement, successDefinition) => {
+    createProject: async (projectData) => {
         try {
             const response = await fetch(`${API_BASE_URL}/api/projects`, {
                 method: 'POST',
@@ -86,11 +85,58 @@ export const projectsApi = {
                     'Content-Type': 'application/json',
                 },
                 credentials: 'include',
-                body: JSON.stringify({ name, problemStatement, successDefinition }),
+                body: JSON.stringify(projectData),
             });
             return await handleResponse(response);
         } catch (error) {
             console.error('Create project failed:', error);
+            throw error;
+        }
+    },
+
+    updateProject: async (id, projectData) => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/projects/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify(projectData),
+            });
+            return await handleResponse(response);
+        } catch (error) {
+            console.error('Update project failed:', error);
+            throw error;
+        }
+    },
+
+    deleteProject: async (id) => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/projects/${id}`, {
+                method: 'DELETE',
+                credentials: 'include',
+            });
+            return await handleResponse(response);
+        } catch (error) {
+            console.error(`Delete project ${id} failed:`, error);
+            throw error;
+        }
+    },
+
+    assignMember: async (id, data) => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/projects/${id}/members`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify(data),
+            });
+            return await handleResponse(response);
+        } catch (error) {
+            console.error('Assign member failed:', error);
             throw error;
         }
     }

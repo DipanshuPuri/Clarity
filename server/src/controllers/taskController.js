@@ -17,7 +17,13 @@ const create = async (req, res) => {
 
 const list = async (req, res) => {
     try {
-        const tasks = await taskService.getTasks(req.query);
+        const { intentId, decisionId, assigneeId } = req.query;
+        const tasks = await taskService.getTasks({
+            intentId,
+            decisionId,
+            assigneeId,
+            organizationId: req.user?.organizationId
+        });
         res.json(tasks);
     } catch (err) {
         res.status(500).json({ error: err.message });

@@ -12,22 +12,38 @@ const createIntent = async (data) => {
     });
 };
 
-const getIntents = async (filters) => {
+const getIntents = async ({ projectId, organizationId }) => {
     const where = {};
-    if (filters.projectId) where.projectId = filters.projectId;
+
+    // 1. Project Scoping (if provided and valid)
+    if (projectId && projectId !== 'undefined') {
+        where.projectId = projectId;
+    }
+
+    // 2. Organizational Scoping
+    // If we have an organizationId, we must ensure the project belongs to it.
+    if (organizationId) {
+        where.project = {
+            organizationId: organizationId
+        };
+    }
 
     return await prisma.intent.findMany({
         where,
         include: {
             _count: { select: { decisions: true } },
-            tasks: true
+            tasks: true,
+            project: { select: { name: true } }
         }
     });
 };
 
-const getIntentById = async (id) => {
-    return await prisma.intent.findUnique({
-        where: { id },
+const getIntentById = async (id, organizationId) => {
+    return await prisma.intent.findFirst({
+        where: {
+            id,
+            project: { organizationId }
+        },
         include: {
             decisions: true,
             _count: { select: { decisions: true } }

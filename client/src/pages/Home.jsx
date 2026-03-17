@@ -1,87 +1,201 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Target, Zap, ListChecks, TrendingUp, ShieldCheck, ArrowRight, MessageCircle, Mail, Phone, HelpCircle, Instagram, Linkedin, Facebook, Twitter, ChevronRight, Activity, CheckCircle, Github, Globe } from 'lucide-react';
+import { FolderKanban, GitBranch, Rocket, BarChart3, ArrowRight, ChevronRight, Layers, ShieldCheck, Lock, Eye, Github, Globe, Linkedin, Twitter } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Navbar from '../components/ui/Navbar';
 
-/**
- * Home - Overhauled for "Context First Workflow Tracker"
- */
 const Home = () => {
+
     return (
-        <div className="snap-container bg-white overflow-x-hidden animate-fade-in">
+        <div className="bg-white overflow-x-hidden">
             <Navbar />
 
-            {/* 1. HERO SECTION */}
-            <section className="snap-section min-h-screen flex flex-col items-center justify-center text-center px-10 relative overflow-hidden bg-slate-50/50">
-                {/* Visual Background Element */}
+            {/* ═══════════════════════════════════════════
+                PANEL 1 — HERO (Dark, unique background)
+            ═══════════════════════════════════════════ */}
+            <section className="min-h-screen flex flex-col items-center justify-center text-center px-8 relative overflow-hidden bg-slate-900 pt-16">
+                {/* Full repeating pattern background */}
                 <div className="absolute inset-0 z-0 overflow-hidden">
-                    <div className="absolute top-[-50%] left-[-20%] w-[80%] h-[80%] rounded-full bg-gradient-to-br from-secondary/5 to-transparent blur-[120px]" />
-                    <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] rounded-full bg-gradient-to-tl from-slate-200/40 to-transparent blur-[100px]" />
-                    <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150 mix-blend-overlay"></div>
+                    {/* Base gradient */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950" />
+
+                    {/* Premium Hexagonal Dot Matrix Pattern - Inverse Mask (Hidden in center, visible on edges) */}
+                    <div
+                        className="absolute inset-0 z-0"
+                        style={{
+                            backgroundImage: `radial-gradient(ellipse at center, rgba(15,23,42,1) 0%, rgba(15,23,42,1) 40%, rgba(15,23,42,0) 95%), url("data:image/svg+xml,%3Csvg width='60' height='103.923' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='rgba(255,255,255,0.45)'%3E%3Ccircle cx='30' cy='25.98' r='1.5'/%3E%3Ccircle cx='0' cy='77.94' r='1.5'/%3E%3Ccircle cx='60' cy='77.94' r='1.5'/%3E%3Ccircle cx='30' cy='103.92' r='1.5'/%3E%3Ccircle cx='0' cy='25.98' r='1.5'/%3E%3Ccircle cx='60' cy='25.98' r='1.5'/%3E%3C/g%3E%3Cg stroke='rgba(255,255,255,0.22)' stroke-width='1'%3E%3Cpath d='M30 25.98 L60 77.94'/%3E%3Cpath d='M30 25.98 L0 77.94'/%3E%3Cpath d='M0 25.98 L30 77.94'/%3E%3Cpath d='M60 25.98 L30 77.94'/%3E%3C/g%3E%3C/svg%3E")`,
+                            backgroundRepeat: 'repeat',
+                            backgroundSize: '100% 100%, 60px 103.923px',
+                            backgroundPosition: 'center center, center center'
+                        }}
+                    />
+
+                    {/* Secondary macro-grid overlay - Inverse Mask */}
+                    <div
+                        className="absolute inset-0 z-0"
+                        style={{
+                            backgroundImage: `radial-gradient(ellipse at center, rgba(15,23,42,1) 0%, rgba(15,23,42,1) 45%, rgba(15,23,42,0) 100%), url("data:image/svg+xml,%3Csvg width='240' height='240' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='240' height='240' fill='none' stroke='rgba(255,255,255,0.18)' stroke-width='1.5'/%3E%3Ccircle cx='0' cy='0' r='2.5' fill='rgba(255,255,255,0.3)'/%3E%3Ccircle cx='240' cy='0' r='2.5' fill='rgba(255,255,255,0.3)'/%3E%3Ccircle cx='0' cy='240' r='2.5' fill='rgba(255,255,255,0.3)'/%3E%3Ccircle cx='240' cy='240' r='2.5' fill='rgba(255,255,255,0.3)'/%3E%3C/svg%3E")`,
+                            backgroundRepeat: 'repeat',
+                            backgroundSize: '100% 100%, 240px 240px',
+                            backgroundPosition: 'center center, center center'
+                        }}
+                    />
+
+                    {/* Ambient glow behind text area */}
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] rounded-full bg-secondary/[0.06] blur-[160px]" />
+
+                    {/* Corner bracket accents */}
+                    <div className="absolute top-6 left-6 w-16 h-16 border-t border-l border-white/[0.12] rounded-tl-sm" />
+                    <div className="absolute top-6 right-6 w-16 h-16 border-t border-r border-white/[0.12] rounded-tr-sm" />
+                    <div className="absolute bottom-6 left-6 w-16 h-16 border-b border-l border-white/[0.12] rounded-bl-sm" />
+                    <div className="absolute bottom-6 right-6 w-16 h-16 border-b border-r border-white/[0.12] rounded-br-sm" />
                 </div>
 
-                <div className="relative z-10 max-w-6xl">
-                    <div className="space-y-4 mb-8">
-                        <span className="text-[10px] font-bold text-secondary uppercase tracking-[0.4em] animate-fade-in block">Strategic Workflow Architecture</span>
-                        <h1 className="text-[10rem] font-black text-slate-900 tracking-normal leading-none animate-fade-slide-up ml-4">
+                <div className="relative z-10 max-w-4xl mx-auto">
+                    <div className="space-y-6 mb-10">
+                        <h1 className="text-4xl md:text-6xl lg:text-8xl xl:text-[10rem] font-black text-white tracking-wide leading-[0.85] select-none">
                             CLARITY
                         </h1>
-                        <h2 className="text-3xl font-bold text-secondary uppercase tracking-[0.3em] font-sans">
-                            Context First Workflow Tracker
-                        </h2>
-                        <p className="text-base text-slate-500 font-medium max-w-2xl mx-auto leading-loose text-center">
-                            The definitive environment for high-fidelity execution. Trace every action back to its strategic intent and record the reasoning behind every critical decision.
+                        <span className="text-[10px] sm:text-xs font-bold text-secondary uppercase tracking-[0.6em] block opacity-90 mt-4">
+                            Context-First Workflow Architecture
+                        </span>
+                        <p className="text-lg md:text-xl text-slate-400 font-normal max-w-xl mx-auto leading-relaxed mt-8">
+                            Organize projects, orchestrate workflows, ship releases, and track what matters — all with full traceability from intent to outcome.
                         </p>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-6 animate-fade-in delay-200">
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Link to="/login">
-                            <Button className="h-16 px-12 bg-slate-900 text-white rounded-2xl font-black uppercase text-xs tracking-[0.3em] shadow-xl hover:bg-slate-800 hover:scale-105 transition-all">
-                                ACCESS WORKSPACE
-                            </Button>
+                            <button className="h-12 px-8 bg-secondary text-white rounded-lg text-sm font-semibold tracking-wide hover:bg-secondary/90 transition-all flex items-center gap-2 group">
+                                Open Workspace
+                                <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                            </button>
+                        </Link>
+                        <Link to="/register">
+                            <button className="h-12 px-8 bg-slate-900 text-white border border-slate-700 rounded-lg text-sm font-semibold tracking-wide hover:bg-slate-800 hover:border-slate-600 transition-all">
+                                Create Account
+                            </button>
                         </Link>
                     </div>
                 </div>
 
-                <div className="absolute bottom-12 animate-bounce opacity-30">
-                    <div className="w-px h-12 bg-slate-400 mx-auto" />
+                <div className="absolute bottom-10 animate-bounce opacity-20">
+                    <div className="w-px h-10 bg-white mx-auto" />
                 </div>
             </section>
 
-            {/* 2. FEATURES / TRACEABILITY SECTION */}
-            <section className="snap-section min-h-screen flex flex-col items-center justify-center py-32 px-10 bg-white">
-                <div className="max-w-7xl mx-auto w-full space-y-24">
-                    <div className="text-center space-y-4">
-                        <span className="text-[10px] font-bold text-secondary uppercase tracking-[0.4em]">Proprietary Framework</span>
-                        <h3 className="text-6xl font-black text-slate-900 tracking-tighter">A NEW DIMENSION OF TRACEABILITY</h3>
+            {/* ═══════════════════════════════════════════
+                PANEL 2 — HOW IT WORKS (Light)
+            ═══════════════════════════════════════════ */}
+            <section className="min-h-screen flex flex-col items-center justify-center py-28 px-8 bg-slate-50">
+                <div className="max-w-6xl mx-auto w-full space-y-20">
+                    <div className="text-center space-y-3">
+                        <span className="text-[10px] font-medium text-secondary uppercase tracking-[0.4em]">How It Works</span>
+                        <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight">
+                            The Execution Chain
+                        </h2>
+                        <p className="text-base text-slate-500 font-normal max-w-lg mx-auto leading-relaxed">
+                            Every deliverable in Clarity moves through a structured pipeline — from project scoping to production deployment.
+                        </p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+                    {/* Workflow Steps */}
+                    <div className="flex items-stretch justify-center gap-0">
                         {[
                             {
-                                icon: Target,
-                                label: 'Intentionality',
-                                desc: 'Define not just what you are doing, but the core hypothesis behind every move.'
+                                label: 'Projects',
+                                desc: 'Group related work into strategic containers. Define objectives, assign ownership, and track progress across tickets.',
+                                icon: FolderKanban
                             },
                             {
-                                icon: Activity,
-                                label: 'Actionable Context',
-                                desc: 'Embedded reasoning layers ensure that no task is performed without justified purpose.'
+                                label: 'Workflows',
+                                desc: 'Design visual execution flows with branching logic, parallel paths, and conditional gates using the node-based canvas.',
+                                icon: GitBranch
                             },
                             {
-                                icon: CheckCircle,
-                                label: 'Validated Outcomes',
-                                desc: 'Close the execution gap with formal reflections and outcome validation.'
+                                label: 'Releases',
+                                desc: 'Bundle completed work into deployable releases. Freeze scope, run verification gates, and orchestrate deployments.',
+                                icon: Rocket
+                            },
+                            {
+                                label: 'Analytics',
+                                desc: 'Measure velocity, track release health, monitor team capacity, and surface insights across the entire pipeline.',
+                                icon: BarChart3
                             }
-                        ].map((feature, i) => (
-                            <div key={i} className={`p-10 bg-white rounded-[40px] border border-slate-100 space-y-8 hover:shadow-2xl hover:shadow-secondary/5 hover:border-secondary/20 transition-all group animate-scale-in delay-${(i + 1) * 100}`}>
-                                <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center border border-slate-100 group-hover:bg-secondary group-hover:border-secondary transition-all">
-                                    <feature.icon className="w-8 h-8 text-secondary group-hover:text-white transition-colors" />
+                        ].map((node, i, arr) => (
+                            <React.Fragment key={i}>
+                                <div className="group flex-1 max-w-[260px]">
+                                    <div className="h-full p-6 bg-white rounded-2xl border border-slate-200 hover:border-secondary/40 hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+                                        <div className="space-y-4">
+                                            <div className="w-10 h-10 bg-slate-900 rounded-lg flex items-center justify-center">
+                                                <node.icon className="w-5 h-5 text-secondary" />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <h4 className="text-sm font-bold text-slate-900 tracking-tight">{node.label}</h4>
+                                                <p className="text-xs text-slate-500 font-normal leading-relaxed">{node.desc}</p>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="space-y-4">
-                                    <h4 className="text-lg font-bold text-slate-900 uppercase tracking-tight leading-tight">{feature.label}</h4>
-                                    <p className="text-sm text-slate-500 font-medium leading-relaxed">{feature.desc}</p>
+                                {i < arr.length - 1 && (
+                                    <div className="flex items-center justify-center w-10 flex-shrink-0">
+                                        <ChevronRight className="w-5 h-5 text-slate-300" />
+                                    </div>
+                                )}
+                            </React.Fragment>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* ═══════════════════════════════════════════
+                PANEL 3 — CORE PRINCIPLES (Dark)
+            ═══════════════════════════════════════════ */}
+            <section className="min-h-screen flex flex-col items-center justify-center py-28 px-8 bg-slate-900 relative overflow-hidden">
+                {/* Subtle background accent */}
+                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-secondary/5 blur-[150px] rounded-full" />
+                <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-white/3 blur-[120px] rounded-full" />
+
+                <div className="max-w-6xl mx-auto w-full space-y-16 relative z-10">
+                    <div className="text-center space-y-3">
+                        <span className="text-[10px] font-medium text-secondary uppercase tracking-[0.4em]">Built Different</span>
+                        <h2 className="text-4xl md:text-5xl font-extrabold text-white tracking-tight">
+                            Why Teams Choose Clarity
+                        </h2>
+                        <p className="text-base text-slate-400 font-normal max-w-lg mx-auto leading-relaxed">
+                            Every design decision in Clarity is deliberate. Here's what sets it apart from conventional project trackers.
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                        {[
+                            {
+                                icon: Layers,
+                                title: 'Unified Pipeline',
+                                desc: 'Projects, tickets, workflows, and releases live in one connected system. No context-switching between disconnected tools — every piece of work traces back to its strategic origin.',
+                                accent: 'from-secondary/20 to-secondary/5'
+                            },
+                            {
+                                icon: Lock,
+                                title: 'Scope Control',
+                                desc: 'Release scope freezes lock what ships. Verification gates ensure nothing goes to production without passing readiness checks. Halt Pipeline gives you an emergency brake when things go wrong.',
+                                accent: 'from-amber-500/20 to-amber-500/5'
+                            },
+                            {
+                                icon: Eye,
+                                title: 'Full Visibility',
+                                desc: 'Dependency graphs show how releases connect. Risk telemetry flags blockers before they derail timelines. Role-based dashboards give every team member exactly the context they need.',
+                                accent: 'from-blue-500/20 to-blue-500/5'
+                            }
+                        ].map((principle, i) => (
+                            <div key={i} className="group p-8 bg-white/[0.03] border border-white/[0.06] rounded-2xl hover:bg-white/[0.06] hover:border-white/[0.12] transition-all duration-300 relative overflow-hidden">
+                                <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl ${principle.accent} rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+                                <div className="relative z-10 space-y-4">
+                                    <div className="w-10 h-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center">
+                                        <principle.icon className="w-5 h-5 text-secondary" />
+                                    </div>
+                                    <h5 className="text-sm font-bold text-white tracking-tight">{principle.title}</h5>
+                                    <p className="text-xs text-slate-400 font-normal leading-relaxed">{principle.desc}</p>
                                 </div>
                             </div>
                         ))}
@@ -89,137 +203,121 @@ const Home = () => {
                 </div>
             </section>
 
-            {/* 3. CTA SECTION - Free-flowing section to allow smooth Footer transition */}
-            <section
-                className="flex flex-col items-center justify-center text-center px-10 py-40 bg-slate-900 text-white relative overflow-hidden"
-            >
-                <div className="relative z-10 space-y-12 max-w-4xl">
-                    <div className="inline-flex items-center gap-3 px-4 py-2 bg-white/5 border border-white/10 rounded-full mb-4">
-                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Limited Deployment Access</span>
-                    </div>
+            {/* ═══════════════════════════════════════════
+                PANEL 4 — CTA (Light)
+            ═══════════════════════════════════════════ */}
+            <section className="min-h-screen flex flex-col items-center justify-center text-center px-8 bg-white relative overflow-hidden">
+                <div className="relative z-10 space-y-8 max-w-3xl">
                     <div className="space-y-4">
-                        <h2 className="text-7xl font-black tracking-tighter leading-[1.1] text-white px-4">
-                            Start your journey at <br />
-                            <span className="text-secondary">Clarity</span> now.
+                        <h2 className="text-5xl md:text-6xl font-extrabold tracking-tight leading-[1.1] text-slate-900">
+                            Ready to bring<br />
+                            <span className="text-secondary">clarity</span> to your workflow?
                         </h2>
                     </div>
-                    <p className="text-slate-400 text-xl font-medium leading-relaxed max-w-2xl mx-auto">
-                        Experience the world's most disciplined workflow environment. Join the teams who value "Why" as much as "Done".
+                    <p className="text-slate-500 text-lg font-normal leading-relaxed max-w-xl mx-auto">
+                        Stop losing context between tools. Clarity gives your team one connected environment to plan, build, and ship — with every decision traceable.
                     </p>
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-8 pt-12 w-full max-w-lg mx-auto">
-                        <Link to="/login" className="w-full">
-                            <Button className="w-full h-16 bg-secondary text-white rounded-2xl font-black uppercase text-xs tracking-[0.3em] shadow-xl hover:bg-secondary/90 hover:scale-105 transition-all">
-                                LOGIN
-                            </Button>
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+                        <Link to="/login">
+                            <button className="h-12 px-8 bg-secondary text-white rounded-lg text-sm font-semibold tracking-wide hover:bg-secondary/90 transition-all flex items-center gap-2 group">
+                                Sign In
+                                <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                            </button>
                         </Link>
-                        <Link to="/register" className="w-full">
-                            <Button variant="ghost" className="w-full h-16 text-white bg-white/10 border-2 border-white/10 rounded-2xl font-black uppercase text-xs tracking-[0.3em] hover:bg-white/20 hover:border-white/30 transition-all">
-                                REGISTER
-                            </Button>
+                        <Link to="/register">
+                            <button className="h-12 px-8 bg-slate-900 text-white rounded-lg text-sm font-semibold tracking-wide hover:bg-slate-800 transition-all">
+                                Create Account
+                            </button>
                         </Link>
                     </div>
                 </div>
 
-                {/* Decorative Elements */}
-                <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] bg-secondary/10 blur-[150px] rounded-full text-white/0" />
-                <div className="absolute bottom-[-20%] right-[-10%] w-[600px] h-[600px] bg-white/5 blur-[150px] rounded-full text-white/0" />
+                {/* Subtle background */}
+                <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-secondary/5 blur-[150px] rounded-full" />
+                <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-slate-100/80 blur-[150px] rounded-full" />
             </section>
 
-            {/* 4. FOOTER SECTION - Non-Snapping & Spaced */}
-            <section className="bg-white flex flex-col justify-center px-10 md:px-24 pt-40">
-                <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-20 py-24 border-t border-slate-100">
+            {/* ═══════════════════════════════════════════
+                PANEL 5 — FOOTER (Dark)
+            ═══════════════════════════════════════════ */}
+            <footer className="bg-slate-900 text-white px-8 md:px-16 pt-20 pb-12">
+                <div className="max-w-6xl mx-auto">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 pb-12 border-b border-white/10">
 
-                    {/* Brand & Social */}
-                    <div className="lg:col-span-4 space-y-10">
-                        <div className="space-y-4">
-                            <span className="text-3xl font-black text-slate-900 tracking-normal uppercase">Clarity</span>
-                            <p className="text-xs text-slate-400 font-bold uppercase tracking-widest leading-relaxed">
-                                Context First Workflow Tracker
-                                <br />
-                                <span className="text-[10px] opacity-60">High-Fidelity Intelligence Engine</span>
-                            </p>
-                        </div>
-
-                        <div className="flex flex-wrap gap-4">
-                            {[
-                                { ic: Twitter, link: '#' },
-                                { ic: Github, link: '#' },
-                                { ic: Linkedin, link: '#' },
-                                { ic: Globe, link: '#' }
-                            ].map((social, i) => (
-                                <a key={i} href={social.link} className="w-10 h-10 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 hover:text-secondary hover:bg-secondary/5 hover:border-secondary transition-all border border-slate-100 shadow-sm">
-                                    <social.ic className="w-4 h-4" />
-                                </a>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Quick Access */}
-                    <div className="lg:col-span-4 grid grid-cols-2 gap-10">
-                        <div className="space-y-6">
-                            <h5 className="text-[10px] font-black text-slate-900 uppercase tracking-[0.2em] border-l-2 border-secondary pl-4">Platform</h5>
-                            <ul className="space-y-4 pl-4">
-                                <li><Link to="/login" className="text-xs text-slate-400 font-bold hover:text-slate-900 transition-colors uppercase tracking-widest">Interface</Link></li>
-                                <li><Link to="/projects" className="text-xs text-slate-400 font-bold hover:text-slate-900 transition-colors uppercase tracking-widest">Containers</Link></li>
-                                <li><Link to="/tasks" className="text-xs text-slate-400 font-bold hover:text-slate-900 transition-colors uppercase tracking-widest">Execution</Link></li>
-                            </ul>
-                        </div>
-                        <div className="space-y-6">
-                            <h5 className="text-[10px] font-black text-slate-900 uppercase tracking-[0.2em] border-l-2 border-slate-200 pl-4">Base Operations</h5>
-                            <ul className="space-y-4 pl-4">
-                                <li><span className="text-xs text-slate-400 font-bold uppercase tracking-widest opacity-40 italic">v1.2.4-STABLE</span></li>
-                                <li><span className="text-xs text-slate-400 font-bold uppercase tracking-widest opacity-40">Latency: 14ms</span></li>
-                                <li><span className="text-xs text-slate-400 font-bold uppercase tracking-widest opacity-40">Nodes: 06</span></li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    {/* Operational Map */}
-                    <div className="lg:col-span-4">
-                        <div className="p-10 bg-slate-50 rounded-[40px] border border-slate-100 space-y-8 shadow-sm">
-                            <div className="flex items-center justify-between">
-                                <h5 className="text-[10px] font-black text-slate-900 uppercase tracking-[0.2em]">Operational Status</h5>
-                                <div className="flex items-center gap-2">
-                                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                                    <span className="text-[8px] font-black text-green-600 uppercase">Secure</span>
-                                </div>
+                        {/* Brand */}
+                        <div className="lg:col-span-4 space-y-5">
+                            <div className="space-y-2">
+                                <span className="text-xl font-bold text-white tracking-tight">Clarity</span>
+                                <p className="text-xs text-slate-500 font-normal leading-relaxed">
+                                    Context-first workflow tracker for teams who<br />value traceability as much as delivery.
+                                </p>
                             </div>
+                            <div className="flex gap-3">
+                                {[
+                                    { ic: Twitter, link: '#' },
+                                    { ic: Github, link: '#' },
+                                    { ic: Linkedin, link: '#' },
+                                    { ic: Globe, link: '#' }
+                                ].map((social, i) => (
+                                    <a key={i} href={social.link} className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-slate-500 hover:text-secondary hover:border-secondary/30 transition-all">
+                                        <social.ic className="w-3.5 h-3.5" />
+                                    </a>
+                                ))}
+                            </div>
+                        </div>
 
-                            <div className="space-y-6">
-                                <div className="space-y-1">
-                                    <h5 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">Command Center</h5>
-                                    <p className="text-xs font-bold text-slate-900 leading-relaxed">Intelligence Station One, Palo Alto, Strategic Zone Alpha</p>
+                        {/* Links */}
+                        <div className="lg:col-span-3 space-y-4">
+                            <h5 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Platform</h5>
+                            <ul className="space-y-3">
+                                <li><Link to="/login" className="text-sm text-slate-500 font-normal hover:text-white transition-colors">Dashboard</Link></li>
+                                <li><Link to="/login" className="text-sm text-slate-500 font-normal hover:text-white transition-colors">Projects</Link></li>
+                                <li><Link to="/login" className="text-sm text-slate-500 font-normal hover:text-white transition-colors">Workflows</Link></li>
+                                <li><Link to="/login" className="text-sm text-slate-500 font-normal hover:text-white transition-colors">Releases</Link></li>
+                            </ul>
+                        </div>
+
+                        {/* System Status */}
+                        <div className="lg:col-span-5">
+                            <div className="p-6 bg-white/[0.03] border border-white/[0.06] rounded-xl space-y-5">
+                                <div className="flex items-center justify-between">
+                                    <h5 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">System Status</h5>
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+                                        <span className="text-[10px] font-bold text-emerald-400 uppercase">Operational</span>
+                                    </div>
                                 </div>
-                                <div className="p-6 bg-white border border-slate-100 rounded-3xl">
-                                    <p className="text-[10px] font-bold text-slate-900 opacity-30 uppercase tracking-tighter">System Hash</p>
-                                    <p className="text-[10px] font-mono text-secondary break-all">CL-992-BX-INTENT-44</p>
+                                <div className="grid grid-cols-3 gap-4">
+                                    <div className="space-y-1">
+                                        <p className="text-lg font-bold text-white">v1.2.4</p>
+                                        <p className="text-[9px] font-medium text-slate-500 uppercase tracking-wider">Stable Build</p>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <p className="text-lg font-bold text-white">14ms</p>
+                                        <p className="text-[9px] font-medium text-slate-500 uppercase tracking-wider">Avg Latency</p>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <p className="text-lg font-bold text-white">06</p>
+                                        <p className="text-[9px] font-medium text-slate-500 uppercase tracking-wider">Active Nodes</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                {/* Final Protocol */}
-                <div className="pb-20 text-center border-t border-slate-50 pt-20">
-                    <div className="flex flex-col items-center gap-10">
-                        <div className="flex flex-wrap justify-center items-center gap-x-12 gap-y-6">
-                            <Link to="/terms" className="text-[11px] font-extrabold text-slate-400 uppercase tracking-[0.1em] hover:text-slate-900 transition-colors">Terms of Protocol</Link>
-                            <div className="w-1.5 h-1.5 bg-secondary rounded-full" />
-                            <Link to="/faq" className="text-[11px] font-extrabold text-slate-400 uppercase tracking-[0.1em] hover:text-slate-900 transition-colors">Intelligence Brief</Link>
-                            <div className="w-1.5 h-1.5 bg-secondary rounded-full" />
-                            <Link to="/privacy" className="text-[11px] font-extrabold text-slate-400 uppercase tracking-[0.1em] hover:text-slate-900 transition-colors">Privacy Shield</Link>
-                        </div>
-                        <div className="space-y-4">
-                            <div className="h-px w-64 bg-slate-100 mx-auto" />
-                            <p className="text-sm font-black text-slate-900 uppercase tracking-[0.2em] leading-loose">
-                                &copy; {new Date().getFullYear()} CLARITY BUREAU
-                                <br />
-                                <span className="text-slate-900 text-xs tracking-[0.1em]">ALL RIGHTS RESERVED</span>
-                            </p>
+                    {/* Bottom Bar */}
+                    <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+                        <p className="text-xs text-slate-600 font-normal">
+                            &copy; {new Date().getFullYear()} Clarity - Context First Workflow Architecture. All rights reserved.
+                        </p>
+                        <div className="flex items-center gap-6">
+                            <Link to="/terms" className="text-xs text-slate-600 font-normal hover:text-slate-300 transition-colors">Terms</Link>
+                            <Link to="/privacy" className="text-xs text-slate-600 font-normal hover:text-slate-300 transition-colors">Privacy</Link>
+                            <Link to="/faq" className="text-xs text-slate-600 font-normal hover:text-slate-300 transition-colors">Help</Link>
                         </div>
                     </div>
                 </div>
-            </section>
+            </footer>
         </div>
     );
 };

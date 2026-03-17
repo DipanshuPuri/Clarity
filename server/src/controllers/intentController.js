@@ -17,7 +17,11 @@ const create = async (req, res) => {
 const list = async (req, res) => {
     try {
         const { projectId } = req.query;
-        const intents = await intentService.getIntents({ projectId });
+        // organizationId comes from req.user (injected by authenticate middleware)
+        const intents = await intentService.getIntents({
+            projectId,
+            organizationId: req.user?.organizationId
+        });
         res.json(intents);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -26,8 +30,8 @@ const list = async (req, res) => {
 
 const get = async (req, res) => {
     try {
-        const intent = await intentService.getIntentById(req.params.id);
-        if (!intent) return res.status(404).json({ error: 'Intent not found' });
+        const intent = await intentService.getIntentById(req.params.id, req.user?.organizationId);
+        if (!intent) return res.status(404).json({ error: 'Intent not found or access denied' });
         res.json(intent);
     } catch (err) {
         res.status(500).json({ error: err.message });

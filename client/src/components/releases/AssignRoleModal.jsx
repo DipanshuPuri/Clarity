@@ -1,0 +1,143 @@
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
+import { X, Search, Shield, ChevronRight } from 'lucide-react';
+import { usersApi } from '../../api/users';
+
+const AssignRoleModal = ({ isOpen, onClose, onAssign, roleTitle }) => {
+    const [searchQuery, setSearchQuery] = useState('');
+    const [potentialMembers, setPotentialMembers] = useState([]);
+    const [selectedMemberId, setSelectedMemberId] = useState(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const users = await usersApi.getUsers();
+                setPotentialMembers(users);
+            } catch (error) {
+                console.error('Failed to fetch members:', error);
+            }
+        };
+        if (isOpen) {
+            fetchUsers();
+            setSelectedMemberId(null);
+        }
+    }, [isOpen]);
+
+    const filteredMembers = potentialMembers.filter(m =>
+        (m.firstName + ' ' + m.lastName).toLowerCase().includes(searchQuery.toLowerCase()) ||
+        m.role?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        m.email?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    const handleConfirm = async () => {
+        if (!selectedMemberId) return;
+        const selectedMember = potentialMembers.find(m => m.id === selectedMemberId);
+        setIsSubmitting(true);
+        try {
+            await onAssign(selectedMemberId, selectedMember);
+            onClose();
+        } catch (error) {
+            console.error("Assignment failed:", error);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    if (!isOpen) return null;
+
+    const modalContent = (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+            <div
+                className="absolute inset-0 bg-slate-900/40 backdrop-blur-md animate-fade-in"
+                onClick={onClose}
+            />
+
+            <div className="relative w-full max-w-md bg-white rounded-[32px] shadow-2xl border border-slate-100 overflow-hidden animate-scale-in flex flex-col max-h-[90vh]">
+                {/* Header */}
+                <div className="px-8 py-6 border-b border-slate-50 flex items-center justify-between bg-slate-50/10">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-white border border-slate-100 flex items-center justify-center shadow-sm">
+                            <Shield className="w-5 h-5 text-secondary" />
+                        </div>
+                        <div>
+                            <h3 className="text-lg font-bold text-slate-900 tracking-tight leading-none uppercase">Assign {roleTitle}</h3>
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Operational Duty</p>
+                        </div>
+                    </div>
+                    <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-lg transition-colors">
+                        <X className="w-5 h-5 text-slate-400" />
+                    </button>
+                </div>
+
+                {/* Content */}
+                <div className="p-8 space-y-6 flex-1 overflow-hidden flex flex-col">
+                    <div className="relative">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                        <input
+                            type="text"
+                            placeholder="Search organization roster..."
+                            className="w-full h-11 bg-slate-50 border border-slate-100 rounded-xl pl-12 pr-4 text-[12px] font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-secondary/30 transition-all shadow-inner"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                    </div>
+
+                    <div className="space-y-1 overflow-y-auto custom-scrollbar flex-1 -mr-2 pr-2">
+                        {filteredMembers.map(member => (
+                            <button
+                                key={member.id}
+                                onClick={() => setSelectedMemberId(member.id)}
+                                className={`w-full flex items-center gap-3 p-3 rounded-2xl border transition-all group ${selectedMemberId === member.id ? 'bg-secondary/5 border-secondary shadow-sm' : 'border-transparent hover:bg-slate-50 hover:border-slate-100'}`}
+                            >
+                                {member.profilePicture ? (
+                                    <img src={member.profilePicture} className="w-9 h-9 rounded-xl border border-white shadow-sm" alt="" />
+                                ) : (
+                                    <div className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-[12px] font-bold text-slate-400 border border-white shadow-sm">
+                                        {member.firstName?.[0] || member.email?.[0] || '?'}
+                                    </div>
+                                )}
+                                <div className="flex-1 text-left">
+                                    <p className={`text-[12px] font-bold ${selectedMemberId === member.id ? 'text-secondary' : 'text-slate-900'} transition-colors`}>{member.firstName} {member.lastName}</p>
+                                    <p className="text-[9px] font-medium text-slate-400 uppercase tracking-widest">{member.role || 'Unassigned Role'}</p>
+                                </div>
+                                {selectedMemberId === member.id && (
+                                    <div className="w-5 h-5 rounded-full bg-secondary flex items-center justify-center shadow-lg shadow-secondary/30">
+                                        <ChevronRight className="w-3 h-3 text-white" />
+                                    </div>
+                                )}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Footer */}
+                <div className="px-8 py-6 bg-slate-50 border-t border-slate-100 flex items-center gap-3">
+                    <button
+                        onClick={onClose}
+                        className="flex-1 h-11 rounded-xl text-[11px] font-bold uppercase tracking-widest text-slate-500 hover:text-slate-700 hover:bg-slate-200/50 transition-all border border-slate-200"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        onClick={handleConfirm}
+                        disabled={!selectedMemberId || isSubmitting}
+                        className="flex-[2] h-11 bg-slate-900 text-white rounded-xl text-[11px] font-bold uppercase tracking-widest hover:bg-slate-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-black/10"
+                    >
+                        {isSubmitting ? (
+                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        ) : (
+                            <Shield className="w-4 h-4 text-secondary" />
+                        )}
+                        Confirm Assignment
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+
+    const root = document.getElementById('modal-root');
+    return root ? createPortal(modalContent, root) : createPortal(modalContent, document.body);
+};
+
+export default AssignRoleModal;
