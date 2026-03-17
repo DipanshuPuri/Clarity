@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { authApi } from '../api/auth';
+import { authApi, API_BASE_URL } from '../api/auth';
 import { User, Shield, Building2, Image as ImageIcon, CheckCircle, AlertCircle, Save, ExternalLink } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
@@ -62,7 +62,7 @@ const Settings = () => {
         setStatus({ type: '', message: '' });
 
         try {
-            const response = await fetch('http://localhost:3000/api/users/profile', {
+            const response = await fetch(`${API_BASE_URL}/api/users/profile`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'

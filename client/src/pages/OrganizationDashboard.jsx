@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { authApi } from '../api/auth';
+import { authApi, API_BASE_URL } from '../api/auth';
 import { usersApi } from '../api/users';
 import { Building2, AlertCircle, Save, ShieldCheck, Users, Link as LinkIcon, Calendar, Briefcase, FileText, Activity, GitBranch, Rocket, BarChart3, Layers, Target, Zap, CheckCircle } from 'lucide-react';
 import Button from '../components/ui/Button';
@@ -99,7 +99,7 @@ const OrganizationDashboard = () => {
                 organization: formData.organization
             };
 
-            const response = await fetch('http://localhost:3000/api/users/profile', {
+            const response = await fetch(`${API_BASE_URL}/api/users/profile`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'

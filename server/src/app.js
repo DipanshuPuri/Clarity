@@ -32,10 +32,22 @@ app.use(express.json());
 // Parse cookies (used for JWT auth later)
 app.use(cookieParser());
 
-// Enable CORS so frontend (Vite on port 5173) can talk to backend
+// Enable CORS so frontend can talk to backend
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  'http://localhost:5173'
+].filter(Boolean);
+
 app.use(
   cors({
-    origin: 'http://localhost:5173',
+    origin: function (origin, callback) {
+      // Allow requests with no origin (mobile apps, curl, etc.)
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true
   })
 );
