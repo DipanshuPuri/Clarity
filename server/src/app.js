@@ -38,16 +38,11 @@ const allowedOrigins = [
   'http://localhost:5173'
 ].filter(Boolean);
 
+console.log('CORS allowed origins:', allowedOrigins);
+
 app.use(
   cors({
-    origin: function (origin, callback) {
-      // Allow requests with no origin (mobile apps, curl, etc.)
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
+    origin: allowedOrigins,
     credentials: true
   })
 );
