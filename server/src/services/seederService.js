@@ -1,5 +1,5 @@
 const prisma = require('../utils/prismaClient');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 const projectsData = [
     {
