@@ -109,10 +109,11 @@ const signup = async (req, res) => {
         const token = generateToken(user);
 
         // Set JWT as HTTP-only cookie
+        const isProduction = !!process.env.FRONTEND_URL;
         res.cookie('token', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax'
+            secure: isProduction,
+            sameSite: isProduction ? 'none' : 'lax'
         });
 
         // Respond without sensitive data
@@ -173,10 +174,11 @@ const login = async (req, res) => {
         const token = generateToken(userWithOrg);
 
         // Set cookie
+        const isProduction = !!process.env.FRONTEND_URL;
         res.cookie('token', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax'
+            secure: isProduction,
+            sameSite: isProduction ? 'none' : 'lax'
         });
 
         res.json({
@@ -201,7 +203,12 @@ const login = async (req, res) => {
 // LOGOUT
 // =======================
 const logout = (req, res) => {
-    res.clearCookie('token');
+    const isProduction = !!process.env.FRONTEND_URL;
+    res.clearCookie('token', {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: isProduction ? 'none' : 'lax'
+    });
     res.json({ message: 'Logged out successfully' });
 };
 
